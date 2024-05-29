@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.My.service.skills.entity.Skill;
 import com.example.My.service.skills.model.SkillModel;
 import com.example.My.service.skills.service.SkillServiceImpl;
 
@@ -19,7 +19,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("api/skills")
 @AllArgsConstructor
 public class SkillController {
 
@@ -31,9 +30,14 @@ public class SkillController {
         return skillService.saveSkill(skillModel);
     }
 
+    @GetMapping("/skills")
+    public Flux<SkillModel> getSkills(SkillServiceImpl skillServiceImpl) {
+        return skillService.getAllSkills();
+    }
+
     @GetMapping("/skills/{id}")
-    public Flux<SkillModel> getAllSkills() {
-        return skillService.getAllSkill();
+    public Mono<Skill> getSkills(@PathVariable Long id) {
+        return skillService.getSkill(id);
     }
 
     @PutMapping("/skill/{id}")
@@ -47,7 +51,7 @@ public class SkillController {
         return skillService.createSkill(skillModel);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/skills/delete/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public Mono<Void> deleteSkill(@PathVariable("id") Long id) {
         return skillService.deleteSkill(id);

@@ -1,6 +1,5 @@
 package com.example.My.service.skills.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,54 +9,59 @@ import com.example.My.service.skills.mapper.SkillsMapper;
 import com.example.My.service.skills.model.SkillModel;
 import com.example.My.service.skills.repository.SkillRepository;
 
-import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
 @Service
-@AllArgsConstructor
-public class SkillServiceImpl implements SkillService{
-    
+public class SkillServiceImpl implements SkillService {
+
     private SkillRepository skillrepository;
 
+    public SkillServiceImpl(SkillRepository skillRepository) {
+        this.skillrepository = skillRepository;
+    }
 
-    @Override
     public Mono<SkillModel> saveSkill(SkillModel skillModel) {
         Skill skill = SkillsMapper.mapToSkill(skillModel);
         Mono<Skill> savedSkill = skillrepository.save(skill);
         return savedSkill
-                .map((skillEntity)->SkillsMapper.mapToSkillModel(skillEntity));
+                .map((skillEntity) -> SkillsMapper.mapToSkillModel(skillEntity));
     }
 
-    @Override
+    @Transactional
     public Mono<SkillModel> getSkillById(Long id) {
         Mono<Skill> skillMono = skillrepository.findById(id);
-        return skillMono.map((skill -> SkillsMapper.mapToSkillModel(skill))); 
+        return skillMono.map((skill -> SkillsMapper.mapToSkillModel(skill)));
     }
 
     @Transactional(readOnly = true)
-    public Flux<SkillModel> getAllSkill() {
-        return skillrepository.findAll()
-        .map(s -> SkillsMapper.mapToSkillModel(s));
+    public Mono<Skill> getSkill(Long id) {
+        return skillrepository.findById(id);
     }
 
-    @Override
+    @Transactional(readOnly = true)
+    public Flux<SkillModel> getAllSkills() {
+        return skillrepository.findAll()
+                .map(SkillsMapper::mapToSkillModel);
+    }
+
+    @Transactional
     public Mono<SkillModel> createSkill(SkillModel skillModel) {
         return this.skillrepository.save(SkillsMapper.mapToSkill(skillModel))
-        .map(s -> SkillsMapper.mapToSkillModel(s));
+                .map(s -> SkillsMapper.mapToSkillModel(s));
     }
 
-    @Override
+    @Transactional
     public Mono<SkillModel> updateSkill(SkillModel skillModel) {
         return this.skillrepository.findById(skillModel.getId())
-        .switchIfEmpty(Mono.error(new SkillNotFound()))
-        .flatMap(__ -> this.skillrepository.save(SkillsMapper.mapToSkill(skillModel)))
-        .map(SkillsMapper::mapToSkillModel);
+                .switchIfEmpty(Mono.error(new SkillNotFound()))
+                .flatMap(__ -> this.skillrepository.save(SkillsMapper.mapToSkill(skillModel)))
+                .map(SkillsMapper::mapToSkillModel);
     }
 
-    @Override
+    @Transactional
     public Mono<Void> deleteSkill(Long id) {
         return skillrepository.deleteById(id);
     }
+
 }

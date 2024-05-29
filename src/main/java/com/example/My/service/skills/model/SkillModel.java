@@ -16,4 +16,6 @@ public class SkillModel {
     private Long id;
     private String name;
     private String level;
+    private String category;
+    private String icon;
 }

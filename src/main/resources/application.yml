@@ -1,0 +1,20 @@
+spring.application.name: My-service
+logging.level.org.springframework.data.r2dbc: DEBUG
+
+#spring.r2dbc.url=r2dbc:postgresql://localhost/myDatabase
+#spring.r2dbc.username=postgres
+#spring.r2dbc.password=mysecretpassword
+server:
+    port: 8081
+    
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: mysecretpassword
+
+  flyway:
+    url: jdbc:postgresql://localhost:5432/postgres
+    user: postgres
+    password: mysecretpassword
+    baseline-on-migrate: true
